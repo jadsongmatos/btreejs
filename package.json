@@ -1,0 +1,21 @@
+{
+  "name": "btreejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node ./main.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/better-queue": "^3.8.3",
+    "@types/make-fetch-happen": "^10.0.1",
+    "better-queue": "^3.8.12",
+    "better-queue-sqlite": "^1.0.7",
+    "make-fetch-happen": "^11.0.3",
+    "ts-node": "^10.9.1"
+  }
+}
