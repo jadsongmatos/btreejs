@@ -1,15 +1,16 @@
+import { promises as fs } from "fs";
 import fetch from "make-fetch-happen";
-
 import Queue = require("better-queue");
 const SqliteStore = require("better-queue-sqlite");
-import { promises as fs } from "fs";
 
+// Configure the SQLite store for the queue
 const store = new SqliteStore({
   type: "sql",
   dialect: "sqlite",
   path: "/tmp/queue.db.sqlite",
 });
 
+// Create a new queue with a custom asyncWorker function
 const q: Queue = new Queue(asyncWorker, {
   concurrent: 50,
   store: store,
@@ -23,6 +24,7 @@ async function main() {
   let succeeded = 0;
   let failed = 0;
 
+  // Enqueue a batch of tasks to the queue
   function enqueueNextBatch(batchSize: number) {
     const initial = i;
     const limit = Math.min(initial + batchSize, maxCEP + 1);
@@ -32,6 +34,7 @@ async function main() {
     return i === maxCEP + 1;
   }
 
+  // Listen to the queue events for task completion
   q.on("task_finish", function (taskId: any, result: any, stats: any) {
     succeeded++;
     if (
@@ -44,18 +47,23 @@ async function main() {
     }
   });
 
+  // Listen to the queue events for task failure
   q.on("task_failed", function (taskId: any, err: any, stats: any) {
     console.log("task_failed", taskId, err, stats);
     failed++;
   });
 
+  // Start by enqueuing the first batch of tasks
   enqueueNextBatch(100);
 }
 
+// Call the main function to start the script
 main();
 
+// Define the asyncWorker function for processing individual tasks
 async function asyncWorker(cep: string, cb: any) {
   try {
+    // Fetch information for the given zip code from the API endpoint
     const response = await fetch(
       `https://brasil-search.vercel.app/api/cep/${cep}`,
       {
